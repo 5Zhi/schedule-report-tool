@@ -389,7 +389,7 @@ button:active { transform: scale(.98); }
 <script>
 const SUPABASE_URL = "https://xvhpxhjyszrrfbyuaozb.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_RWO4RqhxpD02NC6e4Y890Q_w1dlNnnp";
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let user = null;
 let categories = [];
@@ -408,7 +408,7 @@ async function handleLogin() {
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
   if (!email || !password) return msg('请填写邮箱和密码');
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
   if (error) return msg(error.message);
   user = data.user;
   showApp();
@@ -419,13 +419,13 @@ async function handleRegister() {
   const password = document.getElementById('login-password').value;
   if (!email || !password) return msg('请填写邮箱和密码');
   if (password.length < 6) return msg('密码至少6位');
-  const { data, error } = await supabase.auth.signUp({ email, password });
+  const { data, error } = await supabaseClient.auth.signUp({ email, password });
   if (error) return msg(error.message);
   msg('注册成功，请查收邮箱确认邮件后登录');
 }
 
 async function initSession() {
-  const { data } = await supabase.auth.getSession();
+  const { data } = await supabaseClient.auth.getSession();
   if (data.session) {
     user = data.session.user;
     showApp();
@@ -448,7 +448,7 @@ async function showApp() {
 }
 
 async function fetchCategories() {
-  const { data } = await supabase.from('categories').select('*').order('name');
+  const { data } = await supabaseClient.from('categories').select('*').order('name');
   categories = data || [];
   const sel = document.getElementById('s-category');
   sel.innerHTML = '<option value="">选择分类</option>' + categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
@@ -464,7 +464,7 @@ async function loadAllData() {
 }
 
 async function loadSchedules() {
-  const { data } = await supabase.from('schedules').select('*').eq('user_id', user.id).order('date', { ascending: false });
+  const { data } = await supabaseClient.from('schedules').select('*').eq('user_id', user.id).order('date', { ascending: false });
   schedules = data || [];
   renderSchedules();
   renderScheduleStats();
@@ -472,15 +472,15 @@ async function loadSchedules() {
 }
 
 async function loadInspirations() {
-  const { data } = await supabase.from('inspirations').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+  const { data } = await supabaseClient.from('inspirations').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
   inspirations = data || [];
   renderInspirations();
   renderInspirationStats();
 }
 
 async function loadProjects() {
-  const { data: p } = await supabase.from('projects').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
-  const { data: t } = await supabase.from('project_tasks').select('*').in('project_id', (p || []).map(x => x.id));
+  const { data: p } = await supabaseClient.from('projects').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+  const { data: t } = await supabaseClient.from('project_tasks').select('*').in('project_id', (p || []).map(x => x.id));
   projects = p || [];
   projectTasks = t || [];
   renderProjects();
@@ -488,7 +488,7 @@ async function loadProjects() {
 }
 
 async function loadReminders() {
-  const { data } = await supabase.from('reminders').select('*').eq('user_id', user.id).order('remind_at', { ascending: true });
+  const { data } = await supabaseClient.from('reminders').select('*').eq('user_id', user.id).order('remind_at', { ascending: true });
   reminders = data || [];
   renderReminders();
   renderReminderStats();
@@ -510,20 +510,20 @@ async function addSchedule() {
   const end_time = document.getElementById('s-end').value;
   const description = document.getElementById('s-desc').value.trim();
   if (!title || !date) return alert('标题和日期必填');
-  await supabase.from('schedules').insert([{ user_id: user.id, title, category_id: category_id || null, date, start_time, end_time, description }]);
+  await supabaseClient.from('schedules').insert([{ user_id: user.id, title, category_id: category_id || null, date, start_time, end_time, description }]);
   document.getElementById('s-title').value = '';
   document.getElementById('s-desc').value = '';
   await loadSchedules();
 }
 
 async function toggleSchedule(id, completed) {
-  await supabase.from('schedules').update({ completed: !completed }).eq('id', id);
+  await supabaseClient.from('schedules').update({ completed: !completed }).eq('id', id);
   await loadSchedules();
 }
 
 async function deleteSchedule(id) {
   if (!confirm('确定删除？')) return;
-  await supabase.from('schedules').delete().eq('id', id);
+  await supabaseClient.from('schedules').delete().eq('id', id);
   await loadSchedules();
 }
 
@@ -586,7 +586,7 @@ async function addInspiration() {
   const content = document.getElementById('i-content').value.trim();
   const category = document.getElementById('i-category').value.trim();
   if (!content) return alert('请输入灵感内容');
-  await supabase.from('inspirations').insert([{ user_id: user.id, content, category: category || '未分类' }]);
+  await supabaseClient.from('inspirations').insert([{ user_id: user.id, content, category: category || '未分类' }]);
   document.getElementById('i-content').value = '';
   document.getElementById('i-category').value = '';
   await loadInspirations();
@@ -594,7 +594,7 @@ async function addInspiration() {
 
 async function deleteInspiration(id) {
   if (!confirm('确定删除这条灵感？')) return;
-  await supabase.from('inspirations').delete().eq('id', id);
+  await supabaseClient.from('inspirations').delete().eq('id', id);
   await loadInspirations();
 }
 
@@ -651,7 +651,7 @@ async function addProject() {
   const description = document.getElementById('p-desc').value.trim();
   const due_date = document.getElementById('p-due').value;
   if (!name) return alert('项目名称必填');
-  const { data, error } = await supabase.from('projects').insert([{ user_id: user.id, name, description, due_date, status: 'planning', progress: 0 }]).select().single();
+  const { data, error } = await supabaseClient.from('projects').insert([{ user_id: user.id, name, description, due_date, status: 'planning', progress: 0 }]).select().single();
   if (error) return alert(error.message);
   document.getElementById('p-name').value = '';
   document.getElementById('p-desc').value = '';
@@ -665,34 +665,34 @@ async function addProjectTask(projectId) {
   const title = document.getElementById('pt-title').value.trim();
   if (!title) return alert('任务名称必填');
   const order = projectTasks.filter(t => t.project_id === projectId).length;
-  await supabase.from('project_tasks').insert([{ project_id: projectId, title, status: 'pending', order }]);
+  await supabaseClient.from('project_tasks').insert([{ project_id: projectId, title, status: 'pending', order }]);
   document.getElementById('pt-title').value = '';
   await loadProjects();
   showProjectModal(projectId);
 }
 
 async function toggleTask(taskId, completed) {
-  await supabase.from('project_tasks').update({ completed: !completed }).eq('id', taskId);
+  await supabaseClient.from('project_tasks').update({ completed: !completed }).eq('id', taskId);
   await loadProjects();
   if (activeProjectId) showProjectModal(activeProjectId);
 }
 
 async function deleteTask(taskId) {
   if (!confirm('确定删除这个任务？')) return;
-  await supabase.from('project_tasks').delete().eq('id', taskId);
+  await supabaseClient.from('project_tasks').delete().eq('id', taskId);
   await loadProjects();
   if (activeProjectId) showProjectModal(activeProjectId);
 }
 
 async function deleteProject(id) {
   if (!confirm('确定删除这个项目及所有任务？')) return;
-  await supabase.from('project_tasks').delete().eq('project_id', id);
-  await supabase.from('projects').delete().eq('id', id);
+  await supabaseClient.from('project_tasks').delete().eq('project_id', id);
+  await supabaseClient.from('projects').delete().eq('id', id);
   await loadProjects();
 }
 
 async function updateProjectStatus(id, status) {
-  await supabase.from('projects').update({ status }).eq('id', id);
+  await supabaseClient.from('projects').update({ status }).eq('id', id);
   await loadProjects();
 }
 
@@ -782,7 +782,7 @@ async function addReminder() {
   const title = document.getElementById('r-title').value.trim();
   const remind_at = document.getElementById('r-time').value;
   if (!title || !remind_at) return alert('请填写提醒内容和时间');
-  await supabase.from('reminders').insert([{ user_id: user.id, title, remind_at, is_read: false }]);
+  await supabaseClient.from('reminders').insert([{ user_id: user.id, title, remind_at, is_read: false }]);
   document.getElementById('r-title').value = '';
   document.getElementById('r-time').value = '';
   await loadReminders();
@@ -790,12 +790,12 @@ async function addReminder() {
 
 async function deleteReminder(id) {
   if (!confirm('确定删除这个提醒？')) return;
-  await supabase.from('reminders').delete().eq('id', id);
+  await supabaseClient.from('reminders').delete().eq('id', id);
   await loadReminders();
 }
 
 async function markReminderRead(id) {
-  await supabase.from('reminders').update({ is_read: true }).eq('id', id);
+  await supabaseClient.from('reminders').update({ is_read: true }).eq('id', id);
   await loadReminders();
 }
 
@@ -871,7 +871,7 @@ async function checkReminders() {
   if (Notification.permission !== 'granted') return;
   const now = new Date().toISOString();
   const fiveMinLater = new Date(Date.now() + 5 * 60000).toISOString();
-  const { data } = await supabase.from('reminders')
+  const { data } = await supabaseClient.from('reminders')
     .select('*')
     .eq('user_id', user.id)
     .eq('is_read', false)
@@ -879,7 +879,7 @@ async function checkReminders() {
     .lte('remind_at', fiveMinLater);
   (data || []).forEach(r => {
     new Notification('日程提醒', { body: r.title, icon: '' });
-    supabase.from('reminders').update({ is_read: true }).eq('id', r.id);
+    supabaseClient.from('reminders').update({ is_read: true }).eq('id', r.id);
   });
 }
 
@@ -959,4 +959,3 @@ initSession();
 </script>
 </body>
 </html>
- 

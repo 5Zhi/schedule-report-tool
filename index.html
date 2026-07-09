@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>日程日报周报月报工具</title>
+  <title>日程总结工具 - 手机电脑同步版</title>
   <style>
     :root {
       --bg: #f6f7fb;
@@ -14,36 +14,33 @@
       --primary: #2563eb;
       --primary-dark: #1d4ed8;
       --success: #16a34a;
-      --warning: #f59e0b;
       --danger: #dc2626;
       --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
       --radius: 18px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
-      background: radial-gradient(circle at top left, #dbeafe, transparent 34%), var(--bg);
+      background: radial-gradient(circle at top left, #dbeafe, transparent 35%), var(--bg);
       color: var(--text);
     }
 
     header {
-      padding: 36px 20px 22px;
+      padding: 34px 18px 18px;
       text-align: center;
     }
 
     header h1 {
       margin: 0;
-      font-size: clamp(28px, 5vw, 42px);
+      font-size: clamp(26px, 5vw, 40px);
       letter-spacing: -0.04em;
     }
 
     header p {
-      max-width: 760px;
+      max-width: 780px;
       margin: 12px auto 0;
       color: var(--muted);
       line-height: 1.7;
@@ -51,22 +48,23 @@
 
     main {
       width: min(1180px, calc(100% - 28px));
-      margin: 0 auto 40px;
+      margin: 0 auto 38px;
       display: grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: 400px 1fr;
       gap: 18px;
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.94);
       border: 1px solid rgba(226, 232, 240, 0.9);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       padding: 20px;
-      backdrop-filter: blur(10px);
     }
 
-    .card h2 {
+    .full { grid-column: 1 / -1; }
+
+    h2 {
       margin: 0 0 14px;
       font-size: 20px;
     }
@@ -79,9 +77,7 @@
       font-size: 14px;
     }
 
-    input,
-    select,
-    textarea {
+    input, select, textarea {
       width: 100%;
       padding: 12px 13px;
       border: 1px solid var(--line);
@@ -90,20 +86,36 @@
       color: var(--text);
       background: #fff;
       outline: none;
-      transition: border 0.2s, box-shadow 0.2s;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
+    input:focus, select:focus, textarea:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
     }
 
     textarea {
-      min-height: 92px;
+      min-height: 88px;
       resize: vertical;
     }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 14px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    .primary { background: var(--primary); color: #fff; }
+    .primary:hover { background: var(--primary-dark); }
+    .danger { background: #fee2e2; color: var(--danger); }
+    .success { background: #dcfce7; color: #166534; }
 
     .row {
       display: grid;
@@ -118,45 +130,21 @@
       margin-top: 16px;
     }
 
-    button,
-    .file-button {
-      border: 0;
-      border-radius: 12px;
-      padding: 11px 14px;
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
-      background: #e2e8f0;
-      color: #0f172a;
-      transition: transform 0.15s, background 0.2s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+    .notice {
+      margin-top: 12px;
+      padding: 12px 14px;
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+      border-radius: 14px;
+      line-height: 1.6;
+      font-size: 14px;
     }
 
-    button:hover,
-    .file-button:hover {
-      transform: translateY(-1px);
-    }
-
-    .primary {
-      background: var(--primary);
-      color: #fff;
-    }
-
-    .primary:hover {
-      background: var(--primary-dark);
-    }
-
-    .danger {
-      background: #fee2e2;
-      color: var(--danger);
-    }
-
-    .success {
-      background: #dcfce7;
-      color: #166534;
+    .error {
+      background: #fef2f2;
+      color: #991b1b;
+      border-color: #fecaca;
     }
 
     .muted {
@@ -164,6 +152,8 @@
       font-size: 14px;
       line-height: 1.6;
     }
+
+    .hidden { display: none !important; }
 
     .stats {
       display: grid;
@@ -195,7 +185,7 @@
     .schedule-list {
       display: grid;
       gap: 10px;
-      max-height: 420px;
+      max-height: 430px;
       overflow: auto;
       padding-right: 4px;
     }
@@ -211,9 +201,9 @@
 
     .schedule-top {
       display: flex;
-      align-items: flex-start;
       justify-content: space-between;
       gap: 10px;
+      align-items: flex-start;
     }
 
     .schedule-title {
@@ -223,8 +213,16 @@
     }
 
     .schedule-title.done {
-      text-decoration: line-through;
       color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
     }
 
     .tag {
@@ -237,14 +235,6 @@
       font-size: 12px;
       font-weight: 800;
       white-space: nowrap;
-    }
-
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 13px;
     }
 
     .item-actions {
@@ -261,9 +251,9 @@
 
     .tabs {
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       margin: 4px 0 14px;
-      flex-wrap: wrap;
     }
 
     .tabs button.active {
@@ -283,221 +273,307 @@
       font-family: "Consolas", "SFMono-Regular", monospace;
     }
 
-    .notice {
-      margin-top: 12px;
-      padding: 12px 14px;
-      background: #eff6ff;
-      color: #1e40af;
-      border: 1px solid #bfdbfe;
-      border-radius: 14px;
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
     @media (max-width: 900px) {
-      main {
-        grid-template-columns: 1fr;
-      }
-
-      .stats {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .toolbar {
-        grid-template-columns: 1fr;
-      }
+      main { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .toolbar, .row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>日程日报周报月报工具</h1>
-    <p>记录每天的日程和完成情况，自动生成日报、周报、月报。无需安装软件，数据保存在当前浏览器本地。</p>
+    <h1>日程总结工具 - 手机电脑同步版</h1>
+    <p>使用 Supabase 保存数据。电脑和手机打开这个页面，登录同一个账号，就能同步日程并生成日报、周报、月报。</p>
   </header>
 
   <main>
-    <section class="card">
-      <h2 id="formTitle">新增日程</h2>
-      <form id="scheduleForm">
-        <input type="hidden" id="editingId" />
+    <section id="authCard" class="card full">
+      <h2>登录 / 注册</h2>
+      <p class="muted">第一次使用请先注册账号。以后电脑和手机都用同一个邮箱和密码登录，就能看到同一份日程。</p>
+      <div class="row">
+        <div>
+          <label for="email">邮箱</label>
+          <input id="email" type="email" placeholder="例如：you@example.com" />
+        </div>
+        <div>
+          <label for="password">密码</label>
+          <input id="password" type="password" placeholder="至少 6 位" />
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="loginBtn" type="button">登录</button>
+        <button id="signupBtn" type="button">注册</button>
+      </div>
+      <div id="authMessage" class="notice hidden"></div>
+    </section>
 
-        <label for="title">日程标题</label>
-        <input id="title" required placeholder="例如：完成客户方案、复习英语、整理房间" />
+    <section id="appPanel" class="hidden" style="display: contents;">
+      <section class="card">
+        <h2 id="formTitle">新增日程</h2>
+        <p class="muted">当前账号：<span id="userEmail"></span></p>
+        <form id="scheduleForm">
+          <input type="hidden" id="editingId" />
 
+          <label for="title">日程标题</label>
+          <input id="title" required placeholder="例如：完成客户方案、复习英语、整理房间" />
+
+          <div class="row">
+            <div>
+              <label for="date">日期</label>
+              <input id="date" type="date" required />
+            </div>
+            <div>
+              <label for="category">分类</label>
+              <select id="category"></select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="startTime">开始时间</label>
+              <input id="startTime" type="time" />
+            </div>
+            <div>
+              <label for="endTime">结束时间</label>
+              <input id="endTime" type="time" />
+            </div>
+          </div>
+
+          <label for="description">备注</label>
+          <textarea id="description" placeholder="可以写目标、结果、遇到的问题、下一步计划"></textarea>
+
+          <div class="actions">
+            <button class="primary" type="submit">保存日程</button>
+            <button type="button" id="resetForm">清空表单</button>
+            <button type="button" id="logoutBtn">退出登录</button>
+          </div>
+        </form>
+
+        <div id="syncMessage" class="notice hidden"></div>
+      </section>
+
+      <section class="card">
+        <h2>日程列表</h2>
+        <div class="stats">
+          <div class="stat"><b id="totalCount">0</b><span>总日程</span></div>
+          <div class="stat"><b id="doneCount">0</b><span>已完成</span></div>
+          <div class="stat"><b id="todoCount">0</b><span>未完成</span></div>
+          <div class="stat"><b id="rateCount">0%</b><span>完成率</span></div>
+        </div>
+
+        <div class="toolbar">
+          <input id="filterDate" type="date" />
+          <input id="keyword" placeholder="搜索标题或备注" />
+          <select id="filterCategory">
+            <option value="">全部分类</option>
+          </select>
+        </div>
+
+        <div id="scheduleList" class="schedule-list"></div>
+      </section>
+
+      <section class="card full">
+        <h2>自动总结报告</h2>
         <div class="row">
           <div>
-            <label for="date">日期</label>
-            <input id="date" type="date" required />
+            <label for="reportDate">选择报告日期</label>
+            <input id="reportDate" type="date" />
           </div>
           <div>
-            <label for="category">分类</label>
-            <select id="category">
-              <option value="工作">工作</option>
-              <option value="学习">学习</option>
-              <option value="生活">生活</option>
-              <option value="会议">会议</option>
-              <option value="其他">其他</option>
+            <label for="reportType">报告类型</label>
+            <select id="reportType">
+              <option value="day">日报</option>
+              <option value="week">周报</option>
+              <option value="month">月报</option>
             </select>
           </div>
         </div>
 
-        <div class="row">
-          <div>
-            <label for="startTime">开始时间</label>
-            <input id="startTime" type="time" />
-          </div>
-          <div>
-            <label for="endTime">结束时间</label>
-            <input id="endTime" type="time" />
-          </div>
+        <div class="tabs">
+          <button type="button" data-report="day" class="active">日报</button>
+          <button type="button" data-report="week">周报</button>
+          <button type="button" data-report="month">月报</button>
         </div>
-
-        <label for="description">备注</label>
-        <textarea id="description" placeholder="可以写目标、结果、遇到的问题、下一步计划"></textarea>
 
         <div class="actions">
-          <button class="primary" type="submit">保存日程</button>
-          <button type="button" id="resetForm">清空表单</button>
+          <button class="primary" id="generateReport" type="button">生成报告</button>
+          <button class="success" id="copyReport" type="button">复制报告</button>
+          <button id="downloadReport" type="button">下载报告</button>
+          <button id="refreshBtn" type="button">刷新同步</button>
         </div>
-      </form>
 
-      <div class="notice">
-        小提示：如果换电脑或换浏览器，数据不会自动同步。可以用“导出备份”保存数据，再用“导入备份”恢复。
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>日程列表</h2>
-      <div class="stats">
-        <div class="stat"><b id="totalCount">0</b><span>总日程</span></div>
-        <div class="stat"><b id="doneCount">0</b><span>已完成</span></div>
-        <div class="stat"><b id="todoCount">0</b><span>未完成</span></div>
-        <div class="stat"><b id="rateCount">0%</b><span>完成率</span></div>
-      </div>
-
-      <div class="toolbar">
-        <input id="filterDate" type="date" />
-        <input id="keyword" placeholder="搜索标题或备注" />
-        <select id="filterCategory">
-          <option value="">全部分类</option>
-          <option value="工作">工作</option>
-          <option value="学习">学习</option>
-          <option value="生活">生活</option>
-          <option value="会议">会议</option>
-          <option value="其他">其他</option>
-        </select>
-      </div>
-
-      <div id="scheduleList" class="schedule-list"></div>
-    </section>
-
-    <section class="card" style="grid-column: 1 / -1;">
-      <h2>自动总结报告</h2>
-      <div class="row">
-        <div>
-          <label for="reportDate">选择报告日期</label>
-          <input id="reportDate" type="date" />
-        </div>
-        <div>
-          <label for="reportType">报告类型</label>
-          <select id="reportType">
-            <option value="day">日报</option>
-            <option value="week">周报</option>
-            <option value="month">月报</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="tabs">
-        <button type="button" data-report="day" class="active">日报</button>
-        <button type="button" data-report="week">周报</button>
-        <button type="button" data-report="month">月报</button>
-      </div>
-
-      <div class="actions">
-        <button class="primary" id="generateReport" type="button">生成报告</button>
-        <button class="success" id="copyReport" type="button">复制报告</button>
-        <button id="downloadReport" type="button">下载报告</button>
-        <button id="exportData" type="button">导出备份</button>
-        <label class="file-button" for="importFile">导入备份</label>
-        <input id="importFile" type="file" accept=".json" />
-        <button class="danger" id="clearAll" type="button">清空全部数据</button>
-      </div>
-
-      <label for="reportOutput">报告内容</label>
-      <div id="reportOutput" class="report-box"></div>
+        <label for="reportOutput">报告内容</label>
+        <div id="reportOutput" class="report-box"></div>
+      </section>
     </section>
   </main>
 
-  <script>
-    const STORAGE_KEY = "schedule-report-tool-data";
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    const categoryColors = {
-      工作: "#3b82f6",
-      学习: "#8b5cf6",
-      生活: "#10b981",
-      会议: "#f59e0b",
-      其他: "#6b7280"
-    };
+    const SUPABASE_URL = "https://xvhpxhjyszrrfbyuaozb.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_RWO4RqhxpD02NC6e4Y890Q_w1dlNnnp";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const $ = (id) => document.getElementById(id);
+    const defaultCategories = [
+      { id: "", name: "工作", color: "#3b82f6" },
+      { id: "", name: "学习", color: "#8b5cf6" },
+      { id: "", name: "生活", color: "#10b981" },
+      { id: "", name: "会议", color: "#f59e0b" },
+      { id: "", name: "其他", color: "#6b7280" }
+    ];
 
-    const today = () => {
+    let currentUser = null;
+    let schedules = [];
+    let categories = [...defaultCategories];
+
+    function today() {
       const date = new Date();
       const offset = date.getTimezoneOffset();
       return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 10);
-    };
-
-    let schedules = loadData();
+    }
 
     $("date").value = today();
     $("filterDate").value = today();
     $("reportDate").value = today();
 
-    function loadData() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-      } catch {
-        return [];
+    function showMessage(id, text, isError = false) {
+      const box = $(id);
+      box.textContent = text;
+      box.className = `notice ${isError ? "error" : ""}`;
+      box.classList.remove("hidden");
+    }
+
+    function hideMessage(id) {
+      $(id).classList.add("hidden");
+    }
+
+    async function init() {
+      const { data } = await supabase.auth.getSession();
+      currentUser = data.session?.user || null;
+      await renderAuthState();
+
+      supabase.auth.onAuthStateChange(async (_event, session) => {
+        currentUser = session?.user || null;
+        await renderAuthState();
+      });
+    }
+
+    async function renderAuthState() {
+      if (!currentUser) {
+        $("authCard").classList.remove("hidden");
+        $("appPanel").classList.add("hidden");
+        return;
       }
+
+      $("authCard").classList.add("hidden");
+      $("appPanel").classList.remove("hidden");
+      $("userEmail").textContent = currentUser.email || "";
+      await loadAllData();
     }
 
-    function saveData() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(schedules));
+    $("signupBtn").addEventListener("click", async () => {
+      hideMessage("authMessage");
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      if (!email || !password) {
+        showMessage("authMessage", "请填写邮箱和密码。", true);
+        return;
+      }
+
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        showMessage("authMessage", `注册失败：${error.message}`, true);
+        return;
+      }
+      showMessage("authMessage", "注册成功。如果 Supabase 开启了邮箱确认，请先去邮箱点击确认链接，然后再登录。");
+    });
+
+    $("loginBtn").addEventListener("click", async () => {
+      hideMessage("authMessage");
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      if (!email || !password) {
+        showMessage("authMessage", "请填写邮箱和密码。", true);
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        showMessage("authMessage", `登录失败：${error.message}`, true);
+      }
+    });
+
+    $("logoutBtn").addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      schedules = [];
+      renderList();
+    });
+
+    async function loadAllData() {
+      showMessage("syncMessage", "正在从 Supabase 同步数据...");
+      await loadCategories();
+      await loadSchedules();
+      renderCategoryOptions();
+      renderList();
+      generateReport();
+      showMessage("syncMessage", "同步完成。电脑和手机登录同一个账号即可看到这些日程。");
     }
 
-    function createId() {
-      return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    async function loadCategories() {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("id,name,color")
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        categories = [...defaultCategories];
+        showMessage("syncMessage", `分类读取失败：${error.message}`, true);
+        return;
+      }
+
+      categories = data?.length ? data : [...defaultCategories];
     }
 
-    function resetForm() {
-      $("editingId").value = "";
-      $("formTitle").textContent = "新增日程";
-      $("title").value = "";
-      $("date").value = today();
-      $("category").value = "工作";
-      $("startTime").value = "";
-      $("endTime").value = "";
-      $("description").value = "";
+    async function loadSchedules() {
+      const { data, error } = await supabase
+        .from("schedules")
+        .select("id,user_id,title,category_id,description,start_time,end_time,date,completed,created_at,updated_at")
+        .order("date", { ascending: true })
+        .order("start_time", { ascending: true });
+
+      if (error) {
+        schedules = [];
+        showMessage("syncMessage", `日程读取失败：${error.message}`, true);
+        return;
+      }
+
+      schedules = data || [];
+    }
+
+    function renderCategoryOptions() {
+      const options = categories.map((item) => `<option value="${item.id || item.name}">${escapeHtml(item.name)}</option>`).join("");
+      $("category").innerHTML = options;
+      $("filterCategory").innerHTML = `<option value="">全部分类</option>${options}`;
+    }
+
+    function getCategoryById(categoryId) {
+      return categories.find((item) => item.id === categoryId || item.name === categoryId) || defaultCategories.find((item) => item.name === "其他");
     }
 
     function getFilteredSchedules() {
       const filterDate = $("filterDate").value;
       const keyword = $("keyword").value.trim().toLowerCase();
-      const category = $("filterCategory").value;
+      const categoryValue = $("filterCategory").value;
 
       return schedules
         .filter((item) => !filterDate || item.date === filterDate)
-        .filter((item) => !category || item.category === category)
+        .filter((item) => !categoryValue || item.category_id === categoryValue || getCategoryById(item.category_id)?.name === categoryValue)
         .filter((item) => {
           if (!keyword) return true;
           return item.title.toLowerCase().includes(keyword) || (item.description || "").toLowerCase().includes(keyword);
-        })
-        .sort((a, b) => `${a.date} ${a.startTime || ""}`.localeCompare(`${b.date} ${b.startTime || ""}`));
+        });
     }
 
     function renderStats() {
@@ -506,7 +582,6 @@
       const done = filtered.filter((item) => item.completed).length;
       const todo = total - done;
       const rate = total ? Math.round((done / total) * 100) : 0;
-
       $("totalCount").textContent = total;
       $("doneCount").textContent = done;
       $("todoCount").textContent = todo;
@@ -517,15 +592,16 @@
       renderStats();
       const list = $("scheduleList");
       const filtered = getFilteredSchedules();
+      if (!currentUser) return;
 
       if (!filtered.length) {
-        list.innerHTML = `<p class="muted">当前没有日程。可以在左侧新增一条，或调整日期和筛选条件。</p>`;
+        list.innerHTML = `<p class="muted">当前没有日程。可以新增一条，或调整日期和筛选条件。</p>`;
         return;
       }
 
       list.innerHTML = filtered.map((item) => {
-        const time = item.startTime || item.endTime ? `${item.startTime || "未填"} - ${item.endTime || "未填"}` : "未设置时间";
-        const color = categoryColors[item.category] || categoryColors.其他;
+        const category = getCategoryById(item.category_id);
+        const time = item.start_time || item.end_time ? `${item.start_time || "未填"} - ${item.end_time || "未填"}` : "未设置时间";
         return `
           <article class="schedule-item">
             <div class="schedule-top">
@@ -537,118 +613,134 @@
                   <span>${item.completed ? "已完成" : "未完成"}</span>
                 </div>
               </div>
-              <span class="tag" style="background:${color}">${item.category}</span>
+              <span class="tag" style="background:${category?.color || "#6b7280"}">${escapeHtml(category?.name || "其他")}</span>
             </div>
             ${item.description ? `<div class="muted">${escapeHtml(item.description)}</div>` : ""}
             <div class="item-actions">
-              <button class="success" onclick="toggleDone('${item.id}')">${item.completed ? "标为未完成" : "标为完成"}</button>
-              <button onclick="editSchedule('${item.id}')">编辑</button>
-              <button class="danger" onclick="deleteSchedule('${item.id}')">删除</button>
+              <button class="success" data-action="toggle" data-id="${item.id}">${item.completed ? "标为未完成" : "标为完成"}</button>
+              <button data-action="edit" data-id="${item.id}">编辑</button>
+              <button class="danger" data-action="delete" data-id="${item.id}">删除</button>
             </div>
           </article>
         `;
       }).join("");
     }
 
-    function escapeHtml(text) {
-      return String(text)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+    $("scheduleList").addEventListener("click", async (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
 
-    window.toggleDone = function (id) {
-      schedules = schedules.map((item) => item.id === id ? { ...item, completed: !item.completed, updatedAt: new Date().toISOString() } : item);
-      saveData();
-      renderList();
-      generateReport();
-    };
+      const id = button.dataset.id;
+      const action = button.dataset.action;
+      if (action === "toggle") await toggleDone(id);
+      if (action === "edit") editSchedule(id);
+      if (action === "delete") await deleteSchedule(id);
+    });
 
-    window.editSchedule = function (id) {
+    async function toggleDone(id) {
       const item = schedules.find((schedule) => schedule.id === id);
       if (!item) return;
+      const { error } = await supabase
+        .from("schedules")
+        .update({ completed: !item.completed, updated_at: new Date().toISOString() })
+        .eq("id", id);
 
+      if (error) {
+        showMessage("syncMessage", `更新失败：${error.message}`, true);
+        return;
+      }
+      await loadAllData();
+    }
+
+    function editSchedule(id) {
+      const item = schedules.find((schedule) => schedule.id === id);
+      if (!item) return;
       $("editingId").value = item.id;
       $("formTitle").textContent = "编辑日程";
       $("title").value = item.title;
       $("date").value = item.date;
-      $("category").value = item.category;
-      $("startTime").value = item.startTime || "";
-      $("endTime").value = item.endTime || "";
+      $("category").value = item.category_id || "";
+      $("startTime").value = item.start_time || "";
+      $("endTime").value = item.end_time || "";
       $("description").value = item.description || "";
       window.scrollTo({ top: 0, behavior: "smooth" });
-    };
+    }
 
-    window.deleteSchedule = function (id) {
+    async function deleteSchedule(id) {
       if (!confirm("确定要删除这条日程吗？")) return;
-      schedules = schedules.filter((item) => item.id !== id);
-      saveData();
-      renderList();
-      generateReport();
-    };
+      const { error } = await supabase.from("schedules").delete().eq("id", id);
+      if (error) {
+        showMessage("syncMessage", `删除失败：${error.message}`, true);
+        return;
+      }
+      await loadAllData();
+    }
 
-    $("scheduleForm").addEventListener("submit", (event) => {
+    $("scheduleForm").addEventListener("submit", async (event) => {
       event.preventDefault();
+      if (!currentUser) return;
+
       const id = $("editingId").value;
       const payload = {
-        id: id || createId(),
+        user_id: currentUser.id,
         title: $("title").value.trim(),
+        category_id: $("category").value || null,
+        description: $("description").value.trim() || null,
+        start_time: $("startTime").value || null,
+        end_time: $("endTime").value || null,
         date: $("date").value,
-        category: $("category").value,
-        startTime: $("startTime").value,
-        endTime: $("endTime").value,
-        description: $("description").value.trim(),
-        completed: id ? schedules.find((item) => item.id === id)?.completed || false : false,
-        createdAt: id ? schedules.find((item) => item.id === id)?.createdAt : new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updated_at: new Date().toISOString()
       };
 
       if (!payload.title) {
-        alert("请填写日程标题");
+        showMessage("syncMessage", "请填写日程标题。", true);
         return;
       }
 
-      schedules = id ? schedules.map((item) => item.id === id ? payload : item) : [...schedules, payload];
-      saveData();
+      const result = id
+        ? await supabase.from("schedules").update(payload).eq("id", id)
+        : await supabase.from("schedules").insert(payload);
+
+      if (result.error) {
+        showMessage("syncMessage", `保存失败：${result.error.message}`, true);
+        return;
+      }
+
       resetForm();
-      renderList();
-      generateReport();
+      await loadAllData();
     });
 
+    function resetForm() {
+      $("editingId").value = "";
+      $("formTitle").textContent = "新增日程";
+      $("title").value = "";
+      $("date").value = today();
+      $("startTime").value = "";
+      $("endTime").value = "";
+      $("description").value = "";
+      if (categories[0]) $("category").value = categories[0].id || categories[0].name;
+    }
+
     $("resetForm").addEventListener("click", resetForm);
+    $("refreshBtn").addEventListener("click", loadAllData);
     $("filterDate").addEventListener("input", renderList);
     $("keyword").addEventListener("input", renderList);
     $("filterCategory").addEventListener("input", renderList);
 
     function dateRangeFor(type, dateString) {
       const date = new Date(`${dateString}T00:00:00`);
-
-      if (type === "day") {
-        return { start: dateString, end: dateString, title: `${dateString} 日报` };
-      }
-
+      if (type === "day") return { start: dateString, end: dateString, title: `${dateString} 日报` };
       if (type === "week") {
         const day = date.getDay() || 7;
         const monday = new Date(date);
         monday.setDate(date.getDate() - day + 1);
         const sunday = new Date(monday);
         sunday.setDate(monday.getDate() + 6);
-        return {
-          start: formatDate(monday),
-          end: formatDate(sunday),
-          title: `${formatDate(monday)} 至 ${formatDate(sunday)} 周报`
-        };
+        return { start: formatDate(monday), end: formatDate(sunday), title: `${formatDate(monday)} 至 ${formatDate(sunday)} 周报` };
       }
-
       const first = new Date(date.getFullYear(), date.getMonth(), 1);
       const last = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-      return {
-        start: formatDate(first),
-        end: formatDate(last),
-        title: `${date.getFullYear()}年${date.getMonth() + 1}月月报`
-      };
+      return { start: formatDate(first), end: formatDate(last), title: `${date.getFullYear()}年${date.getMonth() + 1}月月报` };
     }
 
     function formatDate(date) {
@@ -656,28 +748,22 @@
       return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 10);
     }
 
-    function inRange(item, start, end) {
-      return item.date >= start && item.date <= end;
-    }
-
     function generateReport() {
       const type = $("reportType").value;
       const range = dateRangeFor(type, $("reportDate").value || today());
       const items = schedules
-        .filter((item) => inRange(item, range.start, range.end))
-        .sort((a, b) => `${a.date} ${a.startTime || ""}`.localeCompare(`${b.date} ${b.startTime || ""}`));
+        .filter((item) => item.date >= range.start && item.date <= range.end)
+        .sort((a, b) => `${a.date} ${a.start_time || ""}`.localeCompare(`${b.date} ${b.start_time || ""}`));
 
       const total = items.length;
       const done = items.filter((item) => item.completed).length;
       const todo = total - done;
       const rate = total ? Math.round((done / total) * 100) : 0;
       const byCategory = items.reduce((acc, item) => {
-        acc[item.category] = (acc[item.category] || 0) + 1;
+        const name = getCategoryById(item.category_id)?.name || "其他";
+        acc[name] = (acc[name] || 0) + 1;
         return acc;
       }, {});
-
-      const completedList = items.filter((item) => item.completed);
-      const pendingList = items.filter((item) => !item.completed);
 
       const lines = [];
       lines.push(`# ${range.title}`);
@@ -691,75 +777,54 @@
       lines.push(`- 完成率：${rate}%`);
       lines.push("");
       lines.push("## 二、分类统计");
-
-      if (Object.keys(byCategory).length) {
-        Object.entries(byCategory).forEach(([category, count]) => {
-          lines.push(`- ${category}：${count} 项`);
-        });
-      } else {
-        lines.push("- 暂无数据");
-      }
-
+      Object.keys(byCategory).length
+        ? Object.entries(byCategory).forEach(([category, count]) => lines.push(`- ${category}：${count} 项`))
+        : lines.push("- 暂无数据");
       lines.push("");
       lines.push("## 三、已完成事项");
-
-      if (completedList.length) {
-        completedList.forEach((item) => {
-          lines.push(`- [${item.date}] ${formatTime(item)}${item.title}（${item.category}）${item.description ? `：${item.description}` : ""}`);
-        });
-      } else {
-        lines.push("- 暂无已完成事项");
-      }
-
+      appendItems(lines, items.filter((item) => item.completed), "暂无已完成事项");
       lines.push("");
       lines.push("## 四、未完成事项");
-
-      if (pendingList.length) {
-        pendingList.forEach((item) => {
-          lines.push(`- [${item.date}] ${formatTime(item)}${item.title}（${item.category}）${item.description ? `：${item.description}` : ""}`);
-        });
-      } else {
-        lines.push("- 暂无未完成事项");
-      }
-
+      appendItems(lines, items.filter((item) => !item.completed), "暂无未完成事项");
       lines.push("");
       lines.push("## 五、总结建议");
-
-      if (!total) {
-        lines.push("本周期还没有记录日程。建议先添加今天要做的事情，再生成报告。");
-      } else if (rate >= 80) {
-        lines.push("整体完成情况较好，可以继续保持当前节奏，并复盘哪些安排最有效。");
-      } else if (rate >= 50) {
-        lines.push("完成情况中等，建议把未完成事项拆小，并优先处理最重要的任务。");
-      } else {
-        lines.push("完成率偏低，建议减少同一周期内的任务数量，先保证核心事项完成。");
-      }
+      if (!total) lines.push("本周期还没有记录日程。建议先添加要做的事情，再生成报告。");
+      else if (rate >= 80) lines.push("整体完成情况较好，可以继续保持当前节奏，并复盘哪些安排最有效。");
+      else if (rate >= 50) lines.push("完成情况中等，建议把未完成事项拆小，并优先处理最重要的任务。");
+      else lines.push("完成率偏低，建议减少同一周期内的任务数量，先保证核心事项完成。");
 
       $("reportOutput").textContent = lines.join("\n");
     }
 
-    function formatTime(item) {
-      if (!item.startTime && !item.endTime) return "";
-      return `${item.startTime || "未填"}-${item.endTime || "未填"} `;
+    function appendItems(lines, items, emptyText) {
+      if (!items.length) {
+        lines.push(`- ${emptyText}`);
+        return;
+      }
+      items.forEach((item) => {
+        const category = getCategoryById(item.category_id)?.name || "其他";
+        const time = item.start_time || item.end_time ? `${item.start_time || "未填"}-${item.end_time || "未填"} ` : "";
+        lines.push(`- [${item.date}] ${time}${item.title}（${category}）${item.description ? `：${item.description}` : ""}`);
+      });
     }
 
     $("generateReport").addEventListener("click", generateReport);
     $("reportDate").addEventListener("input", generateReport);
-    $("reportType").addEventListener("input", () => {
-      document.querySelectorAll("[data-report]").forEach((button) => {
-        button.classList.toggle("active", button.dataset.report === $("reportType").value);
-      });
-      generateReport();
-    });
+    $("reportType").addEventListener("input", syncReportTabs);
 
     document.querySelectorAll("[data-report]").forEach((button) => {
       button.addEventListener("click", () => {
         $("reportType").value = button.dataset.report;
-        document.querySelectorAll("[data-report]").forEach((tab) => tab.classList.remove("active"));
-        button.classList.add("active");
-        generateReport();
+        syncReportTabs();
       });
     });
+
+    function syncReportTabs() {
+      document.querySelectorAll("[data-report]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.report === $("reportType").value);
+      });
+      generateReport();
+    }
 
     $("copyReport").addEventListener("click", async () => {
       const text = $("reportOutput").textContent;
@@ -767,10 +832,9 @@
         alert("请先生成报告");
         return;
       }
-
       try {
         await navigator.clipboard.writeText(text);
-        alert("报告已复制，可以粘贴到微信、Word 或备忘录。");
+        alert("报告已复制。");
       } catch {
         alert("复制失败，请手动选中报告内容复制。");
       }
@@ -782,64 +846,28 @@
         alert("请先生成报告");
         return;
       }
-
       const range = dateRangeFor($("reportType").value, $("reportDate").value || today());
-      downloadFile(`${range.title}.md`, text, "text/markdown;charset=utf-8");
-    });
-
-    $("exportData").addEventListener("click", () => {
-      const data = JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), schedules }, null, 2);
-      downloadFile(`日程备份-${today()}.json`, data, "application/json;charset=utf-8");
-    });
-
-    $("importFile").addEventListener("change", (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const data = JSON.parse(reader.result);
-          const importedSchedules = Array.isArray(data) ? data : data.schedules;
-          if (!Array.isArray(importedSchedules)) throw new Error("格式不正确");
-
-          if (!confirm("导入后会覆盖当前浏览器里的日程数据，确定继续吗？")) return;
-          schedules = importedSchedules;
-          saveData();
-          renderList();
-          generateReport();
-          alert("导入成功");
-        } catch {
-          alert("导入失败，请确认选择的是本工具导出的 JSON 备份文件。");
-        } finally {
-          event.target.value = "";
-        }
-      };
-      reader.readAsText(file);
-    });
-
-    $("clearAll").addEventListener("click", () => {
-      if (!confirm("确定要清空全部日程数据吗？这个操作不能撤销。")) return;
-      schedules = [];
-      saveData();
-      renderList();
-      generateReport();
-    });
-
-    function downloadFile(filename, content, type) {
-      const blob = new Blob([content], { type });
+      const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = filename;
+      link.download = `${range.title}.md`;
       document.body.appendChild(link);
       link.click();
       link.remove();
       URL.revokeObjectURL(url);
+    });
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    renderList();
-    generateReport();
+    init();
   </script>
 </body>
 </html>
